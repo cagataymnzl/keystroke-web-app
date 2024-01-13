@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Upload for Prediction</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<div class="container">
+    <h2>Upload Your File</h2>
+    <form action="/predict" method="post" enctype="multipart/form-data">
+        <div class="upload-btn-wrapper">
+            <button class="btn">Browse...</button>
+            <input type="file" name="file" id="fileInput"
+                   onchange="document.getElementById('filenameContainer').innerText
+                   = this.files.length > 0 ? 'File Selected: ' + this.files[0].name : 'No file selected.'"/>
+        </div>
+        <p id="filenameContainer">No file selected.</p> <!-- Container to display selected file name -->
+        <label for="model">Choose a model:</label>
+        <select name="model" id="model">
+            <option value="decision_tree">Decision Tree</option>
+            <option value="random_forest">Random Forest</option>
+            <option value="gbm">Gradiant Boosting Machine</option>
+            <option value="gaussian_nb">Gaussian Naive Bayes</option>
+            <option value="all">All models</option>
+        </select><br><br>
+
+        <label for="train-size">Training Data Size (%):</label>
+        <input type="number" name="train_size" id="train-size" min="1" max="99" placeholder="Enter percentage" required>
+        <br><br>
+        <input type="submit" value="Upload and Predict"/>
+    </form>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Model Metrics Comparison</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            line-height: 1.6;
+            background-color: #f4f4f4; /* Consistent background */
+        }
+
+        .container {
+            width: 80%;
+            margin: auto;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            text-align: center; /* Centering the content */
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 20px auto;
+        }
+
+        .home-link {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 15px;
+            background-color: #007bff; /* Button color */
+            color: #fff; /* Text color */
+            text-decoration: none;
+            border-radius: 5px; /* Rounded corners */
+            transition: background-color 0.3s; /* Smooth transition for hover effect */
+        }
+
+        .home-link:hover {
+            background-color: #0056b3; /* Button hover color */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>All Model Metrics Comparison</h1>
+        <!-- Display the all-model metrics comparison chart -->
+        <img src="{{ all_metrics_chart_url }}" alt="All Metrics Comparison Chart">
+
+        <!-- Navigation back to home or other pages -->
+        <a href="{{ url_for('upload_file') }}" class="home-link">Return to Home</a>
+    </div>
+</body>
+</html>

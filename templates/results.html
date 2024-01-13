@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Model Results</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 95%;
+            margin: auto;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+
+        .header {
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .info-row, .matrix-report-row {
+            display: flex;
+            flex-wrap: wrap; /* Allow wrapping */
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .info-section, .matrix-report-section {
+            flex: 1 1 200px; /* Flex basis of 200px and allowed to grow and shrink */
+            margin: 10px;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            height: auto;
+        }
+
+        .info-section {
+            text-align: left;
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: auto;
+        }
+
+        pre {
+            white-space: pre-wrap;
+            overflow: auto;
+            max-height: 400px;
+        }
+
+        .home-link {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 15px;
+            background-color: #007bff;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+
+        .home-link:hover {
+            background-color: #0056b3;
+        }
+
+        /* Responsive design for smaller screens */
+        @media only screen and (max-width: 768px) {
+            .info-row, .matrix-report-row {
+                flex-direction: column;
+            }
+
+            .info-section, .matrix-report-section {
+                flex-basis: auto; /* Take full width */
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2 class="header">Model Results</h2>
+    <div class="info-row">
+        <!-- Model Used Section -->
+        <div class="info-section">
+            <!-- Model Used Section -->
+            <h3>Model Used</h3>
+            <p>{{ model_used }}</p>
+
+            <!-- Evaluation Results Section -->
+            <h3>Evaluation Results</h3>
+            <p>Accuracy: {{ accuracy }}</p>
+            <p>Precision: {{ precision }}</p>
+            <p>Recall: {{ recall }}</p>
+            <p>F1 Score: {{ f1 }}</p>
+        </div>
+
+        <div class="info-section">
+            <h3 class="header">Typing Behavior Metrics</h3>
+            <p><strong>H:</strong> Hold, the average time passed between when a key is pressed and released.</p>
+            <p><strong>DD:</strong> Down-Down, the average time passed between a key is pressed and the next key is
+                pressed after it.</p>
+            <p><strong>UD:</strong> Up-Down, the average time passed between a key is released and the next key is
+                pressed after it.</p>
+            <p><strong>key_stroke_average:</strong> Average number of the keys pressed within 500ms (half a second).</p>
+            <p><strong>back_space_count:</strong> Average number of the backspace pressed within 500ms (half a second).
+            </p>
+            <p><strong>used_caps:</strong> Indicates if the user used caps lock to capitalize the letters.</p>
+            <p><strong>shift_left_favored:</strong> Indicates if the user used left shift button or right shift button
+                more.</p>
+            <p><strong>label:</strong> The user who wrote the text.</p>
+        </div>
+    </div>
+    <div class="matrix-report-row">
+        <!-- Confusion Matrix Section -->
+        <div class="matrix-report-section">
+            <h3>Confusion Matrix</h3>
+            <img src="{{ cm_image_url }}" alt="Confusion Matrix"/>
+        </div>
+
+        <!-- Classification Report Section -->
+        <div class="matrix-report-section">
+            <h3>Classification Report</h3>
+            <pre>{{ classification_report }}</pre>
+        </div>
+
+        <!-- Feature Importance Section -->
+        {% if feature_importance_url %}
+            <div class="matrix-report-section">
+                <h3>Feature Importance Plot</h3>
+                <img src="{{ feature_importance_url }}" alt="Feature Importance Plot">
+            </div>
+        {% endif %}
+    </div>
+    <!-- Home Button -->
+    <a href="{{ url_for('upload_file') }}" class="home-link">Return to Home</a>
+</div>
+
+</body>
+</html>
