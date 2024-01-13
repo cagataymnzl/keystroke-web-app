@@ -3,13 +3,17 @@ import os
 import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
+from sklearn import tree
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.naive_bayes import GaussianNB
+from sklearn.ensemble import GradientBoostingClassifier
+from sklearn.preprocessing import LabelEncoder
 from flask import Flask, request, render_template, url_for
 from werkzeug.utils import secure_filename
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score, confusion_matrix, classification_report, precision_score, recall_score, \
+    f1_score
 
-from decisionTree import decision_tree_model
-from gaussian import gaussian_naive_bayes_model
-from gbm import gradient_boosting_model
-from randomForest import random_forest_model
 import matplotlib
 matplotlib.use('agg')
 
@@ -17,6 +21,160 @@ app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = 'uploads/'
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
+def decision_tree_model(data_path, test_size):
+    # Load the dataset
+    df = pd.read_csv(data_path)
+    X = df.drop('label', axis=1)  # Adjust column names as per your dataset
+    y = df['label']  # Adjust the target variable name as per your dataset
+
+    # Split the dataset into training and test sets
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size)
+
+    # Initialize and train the decision tree classifier
+    decision_tree = tree.DecisionTreeClassifier()
+    decision_tree.fit(X_train, y_train)
+
+    # Make predictions on the test set
+    predictions = decision_tree.predict(X_test)
+
+    # Calculate metrics
+    accuracy = accuracy_score(y_test, predictions)
+    precision = precision_score(y_test, predictions, average='weighted')
+    recall = recall_score(y_test, predictions, average='weighted')
+    f1 = f1_score(y_test, predictions, average='weighted')
+    conf_matrix = confusion_matrix(y_test, predictions)
+    class_report = classification_report(y_test, predictions)
+
+    # Calculating feature importance
+    importance = decision_tree.feature_importances_
+    feature_importance = dict(zip(X.columns, importance))
+    sorted_importance = sorted(feature_importance.items(), key=lambda x: x[1], reverse=True)
+    features, importance = zip(*sorted_importance)
+
+    # Plotting the feature importance
+    plt.figure(figsize=(10, 6))
+    plt.barh(range(len(importance)), importance, align='center')
+    plt.yticks(range(len(features)), features)
+    plt.xlabel('Feature Importance')
+    plt.title('Feature Importance in Decision Tree Model')
+    image_path = os.path.join('static', "feature_importance.png")
+    plt.savefig(image_path)
+    plt.close()
+
+    # Return the results
+    return accuracy, precision, recall, f1, conf_matrix, class_report, image_path
+def random_forest_model(data_path, test_size):
+    # Load the dataset
+    df = pd.read_csv(data_path)
+    X = df.drop('label', axis=1)  # Adjust column names as per your dataset
+    y = df['label']  # Adjust the target variable name as per your dataset
+
+    # Split the dataset into training and test sets
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size)
+
+    # Initialize and train the Random Forest classifier
+    random_forest = RandomForestClassifier()
+    random_forest.fit(X_train, y_train)
+
+    # Make predictions on the test set
+    predictions = random_forest.predict(X_test)
+
+    # Calculate metrics
+    accuracy = accuracy_score(y_test, predictions)
+    precision = precision_score(y_test, predictions, average='weighted')
+    recall = recall_score(y_test, predictions, average='weighted')
+    f1 = f1_score(y_test, predictions, average='weighted')
+
+    conf_matrix = confusion_matrix(y_test, predictions)
+    class_report = classification_report(y_test, predictions)
+
+    importance = random_forest.feature_importances_
+    feature_importance = dict(zip(X.columns, importance))
+    sorted_importance = sorted(feature_importance.items(), key=lambda x: x[1], reverse=True)
+    features, importance = zip(*sorted_importance)
+
+    plt.figure(figsize=(10, 6))
+    plt.barh(range(len(importance)), importance, align='center')
+    plt.yticks(range(len(features)), features)
+    plt.xlabel('Feature Importance')
+    plt.title('Feature Importance in Random Forest Model')
+    image_path = os.path.join('static', "feature_importance.png")
+    plt.savefig(image_path)
+    plt.close()
+
+    # Return the results
+    return accuracy, precision, recall, f1, conf_matrix, class_report, image_path
+
+def gaussian_naive_bayes_model(data_path, test_size):
+    # Load the dataset
+    df = pd.read_csv(data_path)
+    X = df.drop('label', axis=1)
+    y = df['label']
+
+    # Split the dataset into training and test sets
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size)
+
+    # Initialize and train the Gaussian Naive Bayes classifier
+    gnb = GaussianNB()
+    gnb.fit(X_train, y_train)
+
+    # Make predictions on the test set
+    predictions = gnb.predict(X_test)
+
+    accuracy = accuracy_score(y_test, predictions)
+    precision = precision_score(y_test, predictions, average='weighted')
+    recall = recall_score(y_test, predictions, average='weighted')
+    f1 = f1_score(y_test, predictions, average='weighted')
+
+    conf_matrix = confusion_matrix(y_test, predictions)
+    class_report = classification_report(y_test, predictions)
+
+    # Return the results
+    return accuracy, precision, recall, f1, conf_matrix, class_report, ""
+
+def gradient_boosting_model(data_path, test_size):
+    # Load the dataset
+    df = pd.read_csv(data_path)
+    X = df.drop('label', axis=1)  # Adjust column names as per your dataset
+    y = df['label']  # Adjust the target variable name as per your dataset
+
+    # Encode categorical labels if needed
+    label_encoder = LabelEncoder()
+    y = label_encoder.fit_transform(y)
+
+    # Split the dataset into training and test sets
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size)
+
+    # Initialize and train the Gradient Boosting Classifier
+    gbm = GradientBoostingClassifier()
+    gbm.fit(X_train, y_train)
+
+    # Make predictions on the test set
+    predictions = gbm.predict(X_test)
+
+    # Calculate metrics
+    accuracy = accuracy_score(y_test, predictions)
+    precision = precision_score(y_test, predictions, average='weighted')
+    recall = recall_score(y_test, predictions, average='weighted')
+    f1 = f1_score(y_test, predictions, average='weighted')
+    conf_matrix = confusion_matrix(y_test, predictions)
+    class_report = classification_report(y_test, predictions)
+
+    importance = gbm.feature_importances_
+    feature_importance = dict(zip(X.columns, importance))
+    sorted_importance = sorted(feature_importance.items(), key=lambda x: x[1], reverse=True)
+    features, importance = zip(*sorted_importance)
+
+    plt.figure(figsize=(10, 6))
+    plt.barh(range(len(importance)), importance, align='center')
+    plt.yticks(range(len(features)), features)
+    plt.xlabel('Feature Importance')
+    plt.title('Feature Importance in Gradient Boosting Machine Model')
+    image_path = os.path.join('static', "feature_importance.png")
+    plt.savefig(image_path)
+    plt.close()
+    # Return the results
+    return accuracy, precision, recall, f1, conf_matrix, class_report, image_path
 
 def plot_confusion_matrix(cm, classes, filename='confusion_matrix.png'):
     plt.figure(figsize=(10, 7))
